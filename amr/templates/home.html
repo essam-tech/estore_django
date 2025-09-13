@@ -1,0 +1,118 @@
+{% load static %}
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>الصفحة الرئيسية - متجري</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="{% static 'css/bootstrap.rtl.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/carousel.rtl.css' %}" rel="stylesheet">
+  </head>
+  <body>
+
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'home' %}">متجري</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}">الصفحة الرئيسية</a></li>
+          {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">تسجيل خروج</a></li>
+          {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">تسجيل الدخول</a></li>
+          {% endif %}
+        </ul>
+        <form class="d-flex" role="search">
+          <input class="form-control me-2" type="search" placeholder="بحث" aria-label="بحث">
+          <button class="btn btn-outline-success" type="submit">بحث</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <!-- Carousel -->
+  <div id="homeCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+      {% for img in carousel_images %}
+        <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="{{ forloop.counter0 }}"
+          class="{% if forloop.first %}active{% endif %}" aria-current="{% if forloop.first %}true{% endif %}"
+          aria-label="Slide {{ forloop.counter }}"></button>
+      {% endfor %}
+    </div>
+    <div class="carousel-inner">
+      {% for img in carousel_images %}
+      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+        <img src="{{ img.image.url }}" class="d-block w-100" style="height:400px; object-fit:cover;">
+        <div class="container">
+          <div class="carousel-caption {% if forloop.counter == 1 %}text-start{% elif forloop.counter == 2 %}text-center{% else %}text-end{% endif %}">
+            <h1>{{ img.product.name }}</h1>
+            <p>{{ img.product.description|truncatewords:20 }}</p>
+            <p><a class="btn btn-lg btn-primary" href="{% url 'product_detail' img.product.slug %}">عرض المنتج</a></p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">السابق</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">التالي</span>
+    </button>
+  </div>
+
+  <div class="container marketing mt-5">
+
+    <!-- Categories Album -->
+    <h3 class="my-4">التصنيفات</h3>
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+      {% for cat in categories %}
+      <div class="col">
+        <div class="card h-100 text-center">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ cat.name }}</h5>
+            <a href="{% url 'product_list' cat.slug %}" class="mt-auto btn btn-sm btn-primary">عرض المنتجات</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Ads Section -->
+    <h3 class="my-4">إعلانات</h3>
+    <div class="row g-3">
+      {% for ad in ads %}
+      <div class="col-md-6">
+        <div class="p-3 border rounded bg-light h-100">
+          <h5>{{ ad.title }}</h5>
+          <p>{{ ad.text }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="container mt-5">
+    <p class="float-end"><a href="#">عد إلى الأعلى</a></p>
+    <p>&copy; 2025 متجري &middot; <a href="#">سياسة الخصوصية</a> &middot; <a href="#">شروط الاستخدام</a></p>
+  </footer>
+
+</main>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+</body>
+</html>
