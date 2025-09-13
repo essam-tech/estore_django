@@ -120,13 +120,8 @@ python manage.py migrate
 ```bash
 python manage.py runserver
 ```
-
 5. Open the store in your browser:
-
-```
 http://127.0.0.1:8000/
 ```
 
 ---
-
-تحب أعملها لك؟
