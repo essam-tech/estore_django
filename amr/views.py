@@ -84,3 +84,57 @@ def add_to_cart(request, product_id):
 
     # يرجع للصفحة السابقة أو صفحة تفاصيل المنتج إذا لم تتوفر
     return redirect(request.META.get("HTTP_REFERER", reverse("product_detail", args=[product.slug])))
+
+
+# ===========================
+# صفحة عرض السلة
+# ===========================
+@login_required
+def cart_view(request):
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    items = CartItem.objects.filter(cart=cart)
+
+    subtotal = sum(item.product.price * item.quantity for item in items)
+
+    context = {
+        "cart": cart,
+        "items": items,
+        "subtotal": subtotal,
+    }
+    return render(request, "cart.html", context)
+
+
+# ===========================
+# تحديث كمية المنتج في السلة
+# ===========================
+@login_required
+def update_cart_item(request, item_id):
+    item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+
+    if request.method == "POST":
+        quantity = int(request.POST.get("quantity", 1))
+        if quantity > 0:
+            item.quantity = quantity
+            item.save()
+        else:
+            item.delete()  # لو الكمية صفر نحذف المنتج
+
+    return redirect("cart_view")
+
+
+# ===========================
+# إتمام الشراء (تصفير السلة)
+# ===========================
+@login_required
+def checkout(request):
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    items = CartItem.objects.filter(cart=cart)
+
+    subtotal = sum(item.product.price * item.quantity for item in items)
+
+    if request.method == "POST":
+        # هنا لاحقًا ممكن تضيف إنشاء Order وحفظها في DB
+        items.delete()  # 🧹 تصفير السلة بعد الإتمام
+        return render(request, "checkout_success.html", {"subtotal": subtotal})
+
+    return render(request, "checkout.html", {"cart": cart, "items": items, "subtotal": subtotal})

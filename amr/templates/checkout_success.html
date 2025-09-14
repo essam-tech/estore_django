@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5 text-center">
+  <h2 class="text-success">🎉 تم إتمام الطلب بنجاح!</h2>
+  <p class="mt-3">شكراً لتسوقك معنا. نتمنى لك تجربة سعيدة ❤️</p>
+
+  <h4 class="mt-4">إجمالي الطلب: {{ subtotal }} ر.س</h4>
+
+  <a href="{% url 'home' %}" class="btn btn-primary mt-3">🏠 العودة للصفحة الرئيسية</a>
+</div>
+{% endblock %}
